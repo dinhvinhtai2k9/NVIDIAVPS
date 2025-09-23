@@ -1,4 +1,5 @@
 #!/bin/bash
+
 TCE_VERSION="14.x"
 ARCH="x86_64"
 TCE_MIRROR="http://tinycorelinux.net"

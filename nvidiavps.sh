@@ -1,5 +1,7 @@
 #!/bin/bash
+set -euo pipefail
 
+# === Cấu hình TinyCore ===
 TCE_VERSION="14.x"
 ARCH="x86_64"
 TCE_MIRROR="http://tinycorelinux.net"
@@ -33,6 +35,7 @@ gzip -dc "$INITRD_PATH" | cpio -idmv
 
 echo "[4/6] Injecting SSH startup script and BusyBox..."
 mkdir -p "$WORKDIR/srv"
+
 curl ifconfig.me > "$WORKDIR/srv/lab"
 echo /win11/T4@123456 >> "$WORKDIR/srv/lab"
 
@@ -83,11 +86,11 @@ menuentry "🔧 TinyCore SSH Auto" {
 EOF
 fi
 
+# Set as default boot
 sed -i 's/^GRUB_DEFAULT=.*/GRUB_DEFAULT="🔧 TinyCore SSH Auto"/' "$GRUB_CFG" || echo 'GRUB_DEFAULT="🔧 TinyCore SSH Auto"' >> "$GRUB_CFG"
 sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' "$GRUB_CFG" || echo 'GRUB_TIMEOUT=1' >> "$GRUB_CFG"
 
 update-grub
 
-# === REBOOT CUỐI CÙNG ===
-echo -e "\n✅ All done! Rebooting now..."
+echo -e "\n✅ DONE! System will reboot now."
 reboot
